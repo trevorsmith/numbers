@@ -4,8 +4,8 @@ module Numbers
   # Most actions require an OAuth 2.0 token, which can be a string or a
   # string-like object (see Numbers::AuthToken):
   #
-  #   Numbers::Client.instance.token = '1/A1bcde2FgH3iJK4LMnoPQrST5678uVWxyZa9bcd012E'
-  #   Numbers::Client.instance.token = Numbers::AuthToken.new(email, private_key)
+  #   Numbers.token = '1/A1bcde2FgH3iJK4LMnoPQrST5678uVWxyZa9bcd012E'
+  #   Numbers.token = Numbers::AuthToken.new(email, private_key)
   #
   class Client
     include Singleton
@@ -65,7 +65,6 @@ module Numbers
       params = options[:params].merge(params) if options[:params]
       params = { PARAMS_KEY[method] => params, :headers => headers }
 
-      puts "#{method.to_s.upcase} #{url} #{params.inspect}"
       [method, url, params]
     end
   end

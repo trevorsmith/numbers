@@ -7,6 +7,18 @@ module Numbers
       end
     end
 
+    # The dimensions for this report.
+    # https://developers.google.com/analytics/devguides/reporting/core/dimsmets
+    attr_reader :dimensions
+
+    # The metrics for this report.
+    # https://developers.google.com/analytics/devguides/reporting/core/dimsmets
+    attr_reader :metrics
+
+    # The profile ID for this report.
+    attr_reader :profile_id
+
+
     # Create a new report for a given profile, metrics, and dimensions.
     def initialize(params={})
       @profile_id = params[:profile_id]
@@ -20,9 +32,12 @@ module Numbers
 
     # Query the API for the given date range.
     def query(options={})
+      from = parse_date(options[:from]).strftime('%Y-%m-%d')
+      to = parse_date(options[:to]).strftime('%Y-%m-%d')
+
       response = Client.instance.request(:data,
-        'start-date' => (options[:from] || '2012-01-01'),
-        'end-date' => (options[:to] || Time.now.strftime('%Y-%m-%d')),
+        'start-date' => from,
+        'end-date' => to,
         'ids' => "ga:#{@profile_id}",
         'metrics' => @metrics.join(','),
         'dimensions' => @dimensions.join(','))
@@ -33,6 +48,16 @@ module Numbers
     end
 
   private
+    def parse_date(date)
+      case date
+      when Date    then date
+      when Time    then date.to_date
+      when String  then Date.parse(date)
+      when Integer then Date.parse(date.to_s)
+      when nil     then Date.civil(2012,1,1)
+      end
+    end
+
     # Cast a value to the given type.
     def cast(value, type)
       case type
@@ -49,7 +74,7 @@ module Numbers
       when :time
         value.to_i
       when :date
-        value.to_i
+        parse_date(value)
       end
     end
 
@@ -71,7 +96,7 @@ module Numbers
 
     # Group the rows from the response by metric name, then by dimension value.
     def group(rows, headers={})
-      data = {}
+      data = ActiveSupport::OrderedHash.new
       
       rows.each do |row|
         row.each_with_index do |value, index| # metrics.each
@@ -81,7 +106,7 @@ module Numbers
           value = cast(value, headers[:types][index])
           
           next data[name] = value if @dimensions.empty?
-          scope = (data[name] ||= {})            
+          scope = (data[name] ||= ActiveSupport::OrderedHash.new)            
 
           row.each_with_index do |dimension, count| # dimensions.each
             next if count >= @dimensions.size
@@ -91,7 +116,7 @@ module Numbers
             if count + 1 == @dimensions.size
               scope[dimension] = value
             else
-              scope = (scope[dimension] ||= {})
+              scope = (scope[dimension] ||= ActiveSupport::OrderedHash.new)
             end
           end
         end

@@ -13,3 +13,9 @@ require 'numbers/report'
 require 'numbers/utils'
 require 'numbers/web_property'
 require 'numbers/version'
+
+module Numbers
+  def self.token=(token)
+    Numbers::Client.instance.token = token
+  end
+end
