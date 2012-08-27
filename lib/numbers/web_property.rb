@@ -67,5 +67,9 @@ module Numbers
     def account
       @account ||= Account.find(@account_id)
     end
+
+    def profiles
+      Profile.all(:account => account, :web_property => self)
+    end
   end
 end
