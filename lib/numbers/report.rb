@@ -96,8 +96,9 @@ module Numbers
 
     # Group the rows from the response by metric name, then by dimension value.
     def group(rows, headers={})
+      rows ||= []
       data = ActiveSupport::OrderedHash.new
-      
+
       rows.each do |row|
         row.each_with_index do |value, index| # metrics.each
           next if index < @dimensions.size
