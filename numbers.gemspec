@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "numbers"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Trevor Smith"]
-  s.date = "2012-08-20"
+  s.date = "2012-08-27"
   s.email = "trevorlynnsmith@me.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
     "lib/numbers/utils.rb",
     "lib/numbers/version.rb",
     "lib/numbers/web_property.rb",
+    "numbers.gemspec",
     "test/helper.rb",
     "test/test_numbers.rb"
   ]
